@@ -233,8 +233,8 @@ do
         local py = findPythonWithZstandard()
         if not py then return nil end
 
-        local tmp_in = "/tmp/neb_zstd_in_" .. tostring(math.random(1, 1e9)) .. ".zst"
-        local tmp_out = "/tmp/neb_zstd_out_" .. tostring(math.random(1, 1e9)) .. ".bin"
+        local tmp_in = "/tmp/CADMIO_zstd_in_" .. tostring(math.random(1, 1e9)) .. ".zst"
+        local tmp_out = "/tmp/CADMIO_zstd_out_" .. tostring(math.random(1, 1e9)) .. ".bin"
         local script = string.format([[
 import sys, zstandard
 with open(%q, "rb") as f:
@@ -265,7 +265,7 @@ except Exception as e:
     end
 
     local function decompressViaCli(data: string): string?
-        local tmp_in = "/tmp/neb_zstd_in_" .. tostring(math.random(1, 1e9)) .. ".zst"
+        local tmp_in = "/tmp/CADMIO_zstd_in_" .. tostring(math.random(1, 1e9)) .. ".zst"
         pcall(function() fs.writeFile(tmp_in, data) end)
 
         local ok, result = pcall(function() return process.exec("zstd", { "-d", "-c", tmp_in, "-q" }) end)
@@ -306,7 +306,7 @@ except Exception as e:
     local function compress(data: string, level: number?): string?
         local lvl = level or 3
 
-        local tmp_in = "/tmp/neb_zstd_comp_in_" .. tostring(math.random(1, 1e9)) .. ".bin"
+        local tmp_in = "/tmp/CADMIO_zstd_comp_in_" .. tostring(math.random(1, 1e9)) .. ".bin"
         pcall(function() fs.writeFile(tmp_in, data) end)
 
         local ok, result = pcall(function() return process.exec("zstd", { "-" .. tostring(lvl), "-c", tmp_in, "-q" }) end)
@@ -319,7 +319,7 @@ except Exception as e:
         local py = findPythonWithZstandard()
         if not py then return nil end
 
-        local tmp_out = "/tmp/neb_zstd_comp_out_" .. tostring(math.random(1, 1e9)) .. ".zst"
+        local tmp_out = "/tmp/CADMIO_zstd_comp_out_" .. tostring(math.random(1, 1e9)) .. ".zst"
         local script = string.format([[
 import sys, zstandard
 try:
@@ -389,9 +389,9 @@ local function resolveApiDumpPath(): string?
         local ok = pcall(fs.readFile, Settings.api_dump)
         if ok then return Settings.api_dump end
     end
-    if type(process.env.NEB_API_DUMP) == "string" and process.env.NEB_API_DUMP ~= "" then
-        local ok = pcall(fs.readFile, process.env.NEB_API_DUMP)
-        if ok then return process.env.NEB_API_DUMP end
+    if type(process.env.CADMIO_API_DUMP) == "string" and process.env.CADMIO_API_DUMP ~= "" then
+        local ok = pcall(fs.readFile, process.env.CADMIO_API_DUMP)
+        if ok then return process.env.CADMIO_API_DUMP end
     end
     do
         local ok = pcall(fs.readFile, API_DUMP_PATH)
@@ -465,7 +465,7 @@ local function loadApiDump()
             "API dump not found. Looked for '" .. API_DUMP_PATH
             .. "' relative to CWD, the script directory" .. scriptDirHint
             .. ", and parent directories. You can pass an explicit path with"
-            .. " `api_dump=/abs/path/to/API-Dump.json` or set NEB_API_DUMP.",
+            .. " `api_dump=/abs/path/to/API-Dump.json` or set CADMIO_API_DUMP.",
             0
         )
     end
@@ -510,9 +510,9 @@ local function resolveApiDumpTxtPath(): string?
         local ok = pcall(fs.readFile, Settings.api_dump_txt)
         if ok then return Settings.api_dump_txt end
     end
-    if type(process.env.NEB_API_DUMP_TXT) == "string" and process.env.NEB_API_DUMP_TXT ~= "" then
-        local ok = pcall(fs.readFile, process.env.NEB_API_DUMP_TXT)
-        if ok then return process.env.NEB_API_DUMP_TXT end
+    if type(process.env.CADMIO_API_DUMP_TXT) == "string" and process.env.CADMIO_API_DUMP_TXT ~= "" then
+        local ok = pcall(fs.readFile, process.env.CADMIO_API_DUMP_TXT)
+        if ok then return process.env.CADMIO_API_DUMP_TXT end
     end
     do
         local ok = pcall(fs.readFile, API_DUMP_TXT_PATH)
@@ -637,8 +637,8 @@ local function loadEnums()
             end
         end
     end
-    if type(process.env.NEB_ENUMS) == "string" and process.env.NEB_ENUMS ~= "" then
-        local ok, raw = pcall(fs.readFile, process.env.NEB_ENUMS)
+    if type(process.env.CADMIO_ENUMS) == "string" and process.env.CADMIO_ENUMS ~= "" then
+        local ok, raw = pcall(fs.readFile, process.env.CADMIO_ENUMS)
         if ok and raw then
             local decoded = serde.decode("json", raw)
             if type(decoded) == "table" then
@@ -678,8 +678,8 @@ local function loadClasses()
             end
         end
     end
-    if type(process.env.NEB_CLASSES) == "string" and process.env.NEB_CLASSES ~= "" then
-        local ok, raw = pcall(fs.readFile, process.env.NEB_CLASSES)
+    if type(process.env.CADMIO_CLASSES) == "string" and process.env.CADMIO_CLASSES ~= "" then
+        local ok, raw = pcall(fs.readFile, process.env.CADMIO_CLASSES)
         if ok and raw then
             local decoded = serde.decode("json", raw)
             if type(decoded) == "table" then
@@ -719,8 +719,8 @@ local function loadAssetIds()
             end
         end
     end
-    if type(process.env.NEB_ASSETIDS) == "string" and process.env.NEB_ASSETIDS ~= "" then
-        local ok, raw = pcall(fs.readFile, process.env.NEB_ASSETIDS)
+    if type(process.env.CADMIO_ASSETIDS) == "string" and process.env.CADMIO_ASSETIDS ~= "" then
+        local ok, raw = pcall(fs.readFile, process.env.CADMIO_ASSETIDS)
         if ok and raw then
             local decoded = serde.decode("json", raw)
             if type(decoded) == "table" then
@@ -9652,7 +9652,7 @@ local _ncField = nil
         __call = function(_, ...) return _stub end,
         __index = function(_, k) return _stub end,
         __newindex = function() end,
-        __tostring = function() return "neb-stub" end,
+        __tostring = function() return "CADMIO-stub" end,
         __len = function() return 0 end,
         __pairs = function() return function() return nil end end,
         __ipairs = function() return function() return nil end end,
@@ -11990,7 +11990,7 @@ while true do
     if not okRequest then
         stdio.write("-- Worker error: " .. tostring(requestErr):sub(1, 1000))
     end
-    stdio.write("\n---NEB_END:" .. requestId .. "---\n")
+    stdio.write("\n---CADMIO_END:" .. requestId .. "---\n")
 end
  
 
