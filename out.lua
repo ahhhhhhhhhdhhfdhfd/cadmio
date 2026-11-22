@@ -1,3 +1,4 @@
+-- ignore this
 print("500 DTC Check Made By Lyubomyr2012 On Discord")
 print("Starting 500 Env Logger Check (DTC)")
 print("[PASS] 1. Buffer Library Existence & API")
